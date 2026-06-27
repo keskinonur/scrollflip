@@ -1,5 +1,7 @@
 # scrollflip
 
+<img src="docs/icon.png" width="112" alt="ScrollFlip app icon">
+
 Reverse scroll direction for a wheel mouse while keeping natural scrolling on the trackpad, on macOS.
 
 ![The ScrollFlip menu bar app, showing the Auto, On, and Off modes](docs/menu.png)

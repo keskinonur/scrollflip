@@ -12,6 +12,7 @@
 		FF00000000000000000053 /* ScrollTap.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00000000000000000043 /* ScrollTap.swift */; };
 		FF00000000000000000054 /* ModeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00000000000000000044 /* ModeStore.swift */; };
 		FF00000000000000000055 /* Intents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00000000000000000045 /* Intents.swift */; };
+		FF00000000000000000056 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = FF00000000000000000047 /* AppIcon.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		FF00000000000000000044 /* ModeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeStore.swift; sourceTree = "<group>"; };
 		FF00000000000000000045 /* Intents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Intents.swift; sourceTree = "<group>"; };
 		FF00000000000000000046 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FF00000000000000000047 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,7 +33,7 @@
 /* Begin PBXGroup section */
 		FF00000000000000000002 = {isa = PBXGroup; children = (FF00000000000000000004 /* ScrollFlip */, FF00000000000000000003 /* Products */); sourceTree = "<group>"; };
 		FF00000000000000000003 /* Products */ = {isa = PBXGroup; children = (FF00000000000000000011 /* ScrollFlip.app */); name = Products; sourceTree = "<group>"; };
-		FF00000000000000000004 /* ScrollFlip */ = {isa = PBXGroup; children = (FF00000000000000000041 /* main.swift */, FF00000000000000000042 /* AppDelegate.swift */, FF00000000000000000043 /* ScrollTap.swift */, FF00000000000000000044 /* ModeStore.swift */, FF00000000000000000045 /* Intents.swift */, FF00000000000000000046 /* Info.plist */); path = ScrollFlip; sourceTree = "<group>"; };
+		FF00000000000000000004 /* ScrollFlip */ = {isa = PBXGroup; children = (FF00000000000000000041 /* main.swift */, FF00000000000000000042 /* AppDelegate.swift */, FF00000000000000000043 /* ScrollTap.swift */, FF00000000000000000044 /* ModeStore.swift */, FF00000000000000000045 /* Intents.swift */, FF00000000000000000047 /* AppIcon.icns */, FF00000000000000000046 /* Info.plist */); path = ScrollFlip; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -43,7 +45,7 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		FF00000000000000000022 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		FF00000000000000000022 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (FF00000000000000000056 /* AppIcon.icns in Resources */, ); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */

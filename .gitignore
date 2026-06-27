@@ -2,6 +2,7 @@
 /scrollflip
 *.o
 app/build/
+app/icon/AppIcon.iconset/
 xcuserdata/
 *.xcuserstate
 
