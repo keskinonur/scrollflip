@@ -83,11 +83,7 @@ Use the Shortcuts app to get a menu bar control and a keyboard shortcut.
 3. Add the action Show Notification and pass it the result of the script
 4. Open the shortcut details, turn on Pin in Menu Bar, and add a keyboard shortcut if you want one
 
-On recent macOS you can also describe the shortcut to Siri and let it build the shortcut for you. Use a prompt like this:
-
-> Create a shortcut named Scroll Flip that runs the shell script $HOME/.scrollflip/scrollflip cycle and then shows a notification with the script output.
-
-After Siri creates it, open the shortcut details to pin it to the menu bar and add a keyboard shortcut.
+Some macOS versions offer to generate a shortcut from a written description. In practice the generator skips the Run Shell Script action, so the manual steps above are the reliable way to build this one.
 
 ## Uninstall
 
