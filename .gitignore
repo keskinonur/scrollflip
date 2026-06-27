@@ -1,9 +1,13 @@
 # build output
 /scrollflip
 *.o
+app/build/
+xcuserdata/
+*.xcuserstate
 
 # runtime state
 mode
 *.log
+app.lock
 
 .DS_Store
