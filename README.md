@@ -115,6 +115,8 @@ The app is a Dock-less menu bar agent that runs the same tap and adds two things
 - A menu bar icon to switch between auto, on, and off.
 - App Intents, so `Set Scroll Flip Mode` and `Cycle Scroll Flip Mode` appear as actions in the Shortcuts app and Spotlight, and as a Siri phrase. This is the reason it must be a real app: the metadata that exposes App Intents is produced by Xcode and only works inside a signed, registered app bundle, not a loose binary.
 
+![Set Scroll Flip Mode and Cycle Scroll Flip Mode shown as native actions in the macOS Shortcuts app](docs/shortcuts.png)
+
 ### Requirements
 
 - macOS 14 or later
