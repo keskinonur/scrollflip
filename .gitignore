@@ -1,0 +1,9 @@
+# build output
+/scrollflip
+*.o
+
+# runtime state
+mode
+*.log
+
+.DS_Store
