@@ -2,6 +2,8 @@
 
 Reverse scroll direction for a wheel mouse while keeping natural scrolling on the trackpad, on macOS.
 
+![The ScrollFlip menu bar app, showing the Auto, On, and Off modes](docs/menu.png)
+
 This repo has two builds that share the same engine and the same `~/.scrollflip/mode` file:
 
 - **CLI** (`scrollflip.swift`): one Swift file built with `swiftc`. A LaunchAgent runs it and you control it from the terminal. No app bundle.
