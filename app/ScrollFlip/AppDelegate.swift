@@ -73,8 +73,50 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 item.state = (mode == current) ? .on : .off
             }
         }
-        let symbol = !tap.isActive ? "computermouse.fill" : (ModeStore.shouldFlip() ? "arrow.up.arrow.down.circle.fill" : "computermouse")
-        statusItem?.button?.image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Scroll Flip")
+        statusItem?.button?.image = statusGlyph(active: tap.isActive, flipping: ModeStore.shouldFlip())
+    }
+
+    // Our own menu bar glyph: an outline mouse with the scroll-flip chevrons,
+    // matching the app icon's motif. A template image so macOS tints it for the
+    // light or dark menu bar. Chevrons thicken while flipping; a slash appears
+    // when Accessibility is not granted.
+    private func statusGlyph(active: Bool, flipping: Bool) -> NSImage {
+        let s: CGFloat = 18
+        let image = NSImage(size: NSSize(width: s, height: s), flipped: false) { _ in
+            NSColor.black.setStroke()
+            let mw: CGFloat = 9.5, mh: CGFloat = 13
+            let mx = (s - mw) / 2, my = (s - mh) / 2
+            let mouse = NSBezierPath(roundedRect: NSRect(x: mx, y: my, width: mw, height: mh),
+                                     xRadius: mw / 2, yRadius: mw / 2)
+            mouse.lineWidth = 1.4
+            mouse.stroke()
+
+            let cx = s / 2
+            let yc = my + mh * 0.64
+            let aw: CGFloat = 4, ah: CGFloat = 1.7, gap: CGFloat = 0.6
+            for dir in [CGFloat(1), CGFloat(-1)] {            // up chevron, then down
+                let p = NSBezierPath()
+                p.move(to: NSPoint(x: cx - aw / 2, y: yc + dir * gap))
+                p.line(to: NSPoint(x: cx, y: yc + dir * (gap + ah)))
+                p.line(to: NSPoint(x: cx + aw / 2, y: yc + dir * gap))
+                p.lineWidth = flipping ? 1.7 : 1.2
+                p.lineCapStyle = .round
+                p.lineJoinStyle = .round
+                p.stroke()
+            }
+
+            if !active {                                      // Accessibility not granted
+                let slash = NSBezierPath()
+                slash.move(to: NSPoint(x: mx - 1, y: my - 1))
+                slash.line(to: NSPoint(x: mx + mw + 1, y: my + mh + 1))
+                slash.lineWidth = 1.4
+                slash.lineCapStyle = .round
+                slash.stroke()
+            }
+            return true
+        }
+        image.isTemplate = true
+        return image
     }
 
     @objc private func pickMode(_ sender: NSMenuItem) {
