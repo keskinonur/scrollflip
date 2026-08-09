@@ -1,46 +1,111 @@
 import Foundation
 import IOKit
+import AppIntents
 
-// Shared state for the app and its App Intents. Mode is one word in
-// ~/.scrollflip/mode, the same file the CLI uses, so both versions interoperate.
-enum ModeStore {
-    static let dir = NSHomeDirectory() + "/.scrollflip"
-    static let path = dir + "/mode"
+enum ScrollFlipMode: String, CaseIterable, Identifiable, AppEnum {
+    case auto
+    case on
+    case off
 
-    static func read() -> String {
-        let m = (try? String(contentsOfFile: path, encoding: .utf8))?
-            .trimmingCharacters(in: .whitespacesAndNewlines) ?? "auto"
-        return ["auto", "on", "off"].contains(m) ? m : "auto"
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .auto: "Auto"
+        case .on: "On"
+        case .off: "Off"
+        }
     }
 
-    static func write(_ mode: String) {
-        try? FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
-        try? mode.write(toFile: path, atomically: true, encoding: .utf8)
-        NotificationCenter.default.post(name: .scrollFlipModeChanged, object: nil)
+    var detail: String {
+        switch self {
+        case .auto: "When docked"
+        case .on: "Always"
+        case .off: "Never"
+        }
+    }
+
+    var symbolName: String {
+        switch self {
+        case .auto: "laptopcomputer.and.arrow.down"
+        case .on: "arrow.up.arrow.down"
+        case .off: "pause.fill"
+        }
+    }
+}
+
+enum ModeStoreError: LocalizedError {
+    case couldNotSave
+
+    var errorDescription: String? {
+        "ScrollFlip couldn’t save your mode. Check that ~/.scrollflip is writable."
+    }
+}
+
+// Shared state for the app, CLI, and App Intents. The one-word file remains
+// intentionally simple so every surface interoperates without a helper daemon.
+enum ModeStore {
+    static let directoryURL = FileManager.default.homeDirectoryForCurrentUser
+        .appendingPathComponent(".scrollflip", isDirectory: true)
+    static let modeURL = directoryURL.appendingPathComponent("mode")
+
+    static func read() -> ScrollFlipMode {
+        guard let value = try? String(contentsOf: modeURL, encoding: .utf8)
+            .trimmingCharacters(in: .whitespacesAndNewlines),
+              let mode = ScrollFlipMode(rawValue: value) else {
+            return .auto
+        }
+        return mode
+    }
+
+    static func write(_ mode: ScrollFlipMode) throws {
+        do {
+            try FileManager.default.createDirectory(
+                at: directoryURL,
+                withIntermediateDirectories: true
+            )
+            try mode.rawValue.write(to: modeURL, atomically: true, encoding: .utf8)
+            NotificationCenter.default.post(name: .scrollFlipModeChanged, object: nil)
+        } catch {
+            throw ModeStoreError.couldNotSave
+        }
     }
 
     @discardableResult
-    static func cycle() -> String {
-        let next = ["auto": "on", "on": "off", "off": "auto"][read()] ?? "auto"
-        write(next)
+    static func cycle() throws -> ScrollFlipMode {
+        let next: ScrollFlipMode = switch read() {
+        case .auto: .on
+        case .on: .off
+        case .off: .auto
+        }
+        try write(next)
         return next
     }
 
     static func lidIsClosed() -> Bool {
-        let svc = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("IOPMrootDomain"))
-        guard svc != 0 else { return false }
-        defer { IOObjectRelease(svc) }
-        guard let cf = IORegistryEntryCreateCFProperty(svc, "AppleClamshellState" as CFString,
-                kCFAllocatorDefault, 0)?.takeRetainedValue(),
-              CFGetTypeID(cf) == CFBooleanGetTypeID() else { return false }
-        return CFBooleanGetValue((cf as! CFBoolean))
+        let service = IOServiceGetMatchingService(
+            kIOMainPortDefault,
+            IOServiceMatching("IOPMrootDomain")
+        )
+        guard service != 0 else { return false }
+        defer { IOObjectRelease(service) }
+
+        guard let value = IORegistryEntryCreateCFProperty(
+            service,
+            "AppleClamshellState" as CFString,
+            kCFAllocatorDefault,
+            0
+        )?.takeRetainedValue(), CFGetTypeID(value) == CFBooleanGetTypeID() else {
+            return false
+        }
+        return CFBooleanGetValue((value as! CFBoolean))
     }
 
-    static func shouldFlip() -> Bool {
-        switch read() {
-        case "on":  return true
-        case "off": return false
-        default:    return lidIsClosed()
+    static func shouldFlip(mode: ScrollFlipMode, lidClosed: Bool) -> Bool {
+        switch mode {
+        case .auto: lidClosed
+        case .on: true
+        case .off: false
         }
     }
 }

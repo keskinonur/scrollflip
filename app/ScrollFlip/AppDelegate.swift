@@ -1,114 +1,113 @@
 import AppKit
-import ApplicationServices
 import AppIntents
+import SwiftUI
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let tap = ScrollTap()
+    private lazy var model = AppModel(tap: tap)
     private var statusItem: NSStatusItem!
+    private let popover = NSPopover()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusItem()
-        startTapOrPromptForAccessibility()
-
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.tap.flip = ModeStore.shouldFlip()
-            self?.refreshMenu()
-        }
-        NotificationCenter.default.addObserver(self, selector: #selector(modeChanged),
-            name: .scrollFlipModeChanged, object: nil)
-
-        // Make the Siri phrase and Shortcuts entry available right away.
+        setupPopover()
+        model.onStatusChange = { [weak self] in self?.refreshStatusItem() }
+        model.start()
         ScrollFlipShortcuts.updateAppShortcutParameters()
-    }
 
-    private func startTapOrPromptForAccessibility() {
-        if tap.start() {
-            tap.flip = ModeStore.shouldFlip()
-            return
-        }
-        // Not trusted yet: ask the system to prompt, then retry until granted.
-        // ponytail: literal key avoids the CFString import dance for one constant.
-        let options = ["AXTrustedCheckOptionPrompt": true] as CFDictionary
-        _ = AXIsProcessTrustedWithOptions(options)
-        Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] t in
-            guard let self = self else { t.invalidate(); return }
-            if self.tap.start() {
-                self.tap.flip = ModeStore.shouldFlip()
-                self.refreshMenu()
-                t.invalidate()
+        if !model.accessibilityGranted {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showPopover()
             }
         }
     }
 
-    @objc private func modeChanged() {
-        tap.flip = ModeStore.shouldFlip()
-        refreshMenu()
+    func applicationWillTerminate(_ notification: Notification) {
+        model.stop()
     }
-
-    // MARK: - Menu bar
 
     private func setupStatusItem() {
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        let menu = NSMenu()
-        menu.addItem(modeItem("Auto (only when lid closed)", "auto"))
-        menu.addItem(modeItem("On (always reverse)", "on"))
-        menu.addItem(modeItem("Off", "off"))
-        menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "Quit Scroll Flip", action: #selector(quit), keyEquivalent: "q"))
-        statusItem.menu = menu
-        refreshMenu()
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        guard let button = statusItem.button else { return }
+        button.target = self
+        button.action = #selector(togglePopover)
+        button.sendAction(on: [.leftMouseUp, .rightMouseUp])
+        button.toolTip = "ScrollFlip"
+        refreshStatusItem()
     }
 
-    private func modeItem(_ title: String, _ mode: String) -> NSMenuItem {
-        let item = NSMenuItem(title: title, action: #selector(pickMode(_:)), keyEquivalent: "")
-        item.representedObject = mode
-        item.target = self
-        return item
+    private func setupPopover() {
+        popover.behavior = .transient
+        popover.animates = true
+        popover.contentSize = NSSize(width: 336, height: 300)
+        popover.contentViewController = NSHostingController(
+            rootView: ControlPanelView(model: model)
+        )
     }
 
-    private func refreshMenu() {
-        let current = ModeStore.read()
-        statusItem?.menu?.items.forEach { item in
-            if let mode = item.representedObject as? String {
-                item.state = (mode == current) ? .on : .off
-            }
-        }
-        statusItem?.button?.image = statusGlyph(active: tap.isActive, flipping: ModeStore.shouldFlip())
+    @objc private func togglePopover() {
+        popover.isShown ? popover.performClose(nil) : showPopover()
     }
 
-    // Our own menu bar glyph: an outline mouse with the scroll-flip chevrons,
-    // matching the app icon's motif. A template image so macOS tints it for the
-    // light or dark menu bar. Chevrons thicken while flipping; a slash appears
-    // when Accessibility is not granted.
+    private func showPopover() {
+        guard let button = statusItem.button, !popover.isShown else { return }
+        popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+        popover.contentViewController?.view.window?.makeKey()
+    }
+
+    private func refreshStatusItem() {
+        guard let button = statusItem?.button else { return }
+        button.image = statusGlyph(
+            active: model.accessibilityGranted && model.engineIsActive,
+            flipping: model.isFlipping
+        )
+        button.setAccessibilityLabel("ScrollFlip")
+        button.setAccessibilityValue(model.headline)
+        button.toolTip = "ScrollFlip — \(model.headline)"
+    }
+
+    // A compact template glyph stays legible in every menu-bar appearance.
+    // The chevrons become heavier only while wheel events are being reversed.
     private func statusGlyph(active: Bool, flipping: Bool) -> NSImage {
-        let s: CGFloat = 18
-        let image = NSImage(size: NSSize(width: s, height: s), flipped: false) { _ in
+        let size: CGFloat = 18
+        let image = NSImage(size: NSSize(width: size, height: size), flipped: false) { _ in
             NSColor.black.setStroke()
-            let mw: CGFloat = 9.5, mh: CGFloat = 13
-            let mx = (s - mw) / 2, my = (s - mh) / 2
-            let mouse = NSBezierPath(roundedRect: NSRect(x: mx, y: my, width: mw, height: mh),
-                                     xRadius: mw / 2, yRadius: mw / 2)
-            mouse.lineWidth = 1.4
+
+            let mouseWidth: CGFloat = 9.5
+            let mouseHeight: CGFloat = 13
+            let mouseX = (size - mouseWidth) / 2
+            let mouseY = (size - mouseHeight) / 2
+            let mouse = NSBezierPath(
+                roundedRect: NSRect(
+                    x: mouseX,
+                    y: mouseY,
+                    width: mouseWidth,
+                    height: mouseHeight
+                ),
+                xRadius: mouseWidth / 2,
+                yRadius: mouseWidth / 2
+            )
+            mouse.lineWidth = 1.35
             mouse.stroke()
 
-            let cx = s / 2
-            let yc = my + mh * 0.64
-            let aw: CGFloat = 4, ah: CGFloat = 1.7, gap: CGFloat = 0.6
-            for dir in [CGFloat(1), CGFloat(-1)] {            // up chevron, then down
-                let p = NSBezierPath()
-                p.move(to: NSPoint(x: cx - aw / 2, y: yc + dir * gap))
-                p.line(to: NSPoint(x: cx, y: yc + dir * (gap + ah)))
-                p.line(to: NSPoint(x: cx + aw / 2, y: yc + dir * gap))
-                p.lineWidth = flipping ? 1.7 : 1.2
-                p.lineCapStyle = .round
-                p.lineJoinStyle = .round
-                p.stroke()
+            let centerX = size / 2
+            let centerY = mouseY + mouseHeight * 0.64
+            for direction in [CGFloat(1), CGFloat(-1)] {
+                let chevron = NSBezierPath()
+                chevron.move(to: NSPoint(x: centerX - 2, y: centerY + direction * 0.6))
+                chevron.line(to: NSPoint(x: centerX, y: centerY + direction * 2.3))
+                chevron.line(to: NSPoint(x: centerX + 2, y: centerY + direction * 0.6))
+                chevron.lineWidth = flipping ? 1.7 : 1.15
+                chevron.lineCapStyle = .round
+                chevron.lineJoinStyle = .round
+                chevron.stroke()
             }
 
-            if !active {                                      // Accessibility not granted
+            if !active {
                 let slash = NSBezierPath()
-                slash.move(to: NSPoint(x: mx - 1, y: my - 1))
-                slash.line(to: NSPoint(x: mx + mw + 1, y: my + mh + 1))
+                slash.move(to: NSPoint(x: mouseX - 1, y: mouseY - 1))
+                slash.line(to: NSPoint(x: mouseX + mouseWidth + 1, y: mouseY + mouseHeight + 1))
                 slash.lineWidth = 1.4
                 slash.lineCapStyle = .round
                 slash.stroke()
@@ -116,12 +115,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return true
         }
         image.isTemplate = true
+        image.accessibilityDescription = model.headline
         return image
     }
-
-    @objc private func pickMode(_ sender: NSMenuItem) {
-        if let mode = sender.representedObject as? String { ModeStore.write(mode) }
-    }
-
-    @objc private func quit() { NSApp.terminate(nil) }
 }

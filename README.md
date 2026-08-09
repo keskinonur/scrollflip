@@ -1,15 +1,15 @@
-# scrollflip
+# ScrollFlip
 
 <img src="docs/icon.png" width="112" alt="ScrollFlip app icon">
 
 Reverse scroll direction for a wheel mouse while keeping natural scrolling on the trackpad, on macOS.
 
-![The ScrollFlip menu bar app, showing the Auto, On, and Off modes](docs/menu.png)
+![The ScrollFlip menu bar app, showing its three modes and live status](docs/menu.png)
 
 This repo has two builds that share the same engine and the same `~/.scrollflip/mode` file:
 
 - **CLI** (`scrollflip.swift`): one Swift file built with `swiftc`. A LaunchAgent runs it and you control it from the terminal. No app bundle.
-- **App** (`app/`): a signed, Dock-less menu bar app built with Xcode. Adds a menu bar control and native App Intents, so the mode appears as actions in the Shortcuts app, Spotlight, and Siri.
+- **App** (`app/`): a signed, Dock-less menu bar app built with Xcode. Its native popover shows the current mode, lid state, scroll-engine status, and permission recovery. App Intents expose the same controls to Shortcuts, Spotlight, and Siri.
 
 Run one at a time. Both install a scroll event tap, and two taps cancel each other out.
 
@@ -21,7 +21,7 @@ macOS has one scroll direction setting for every pointing device. The "Natural s
 
 scrollflip installs a scroll event tap. A trackpad and a Magic Mouse send continuous, pixel based scroll events. A wheel mouse sends line based events. scrollflip inverts only the line based events, so the mouse reverses and the trackpad is left alone.
 
-It runs as a per user LaunchAgent and reads a one word mode file once a second:
+Both builds read a one-word mode file. The CLI can run as a per-user LaunchAgent; the app runs only when opened manually:
 
 - `auto`: reverse the mouse only when the laptop lid is closed (docked or clamshell)
 - `on`: always reverse the mouse
@@ -108,12 +108,14 @@ Some macOS versions offer to generate a shortcut from a written description. In 
 
 This unloads and removes the LaunchAgent. The mode file stays in `~/.scrollflip`. Delete that folder to remove everything.
 
-## App (App Intents, menu bar, Siri)
+## App (native menu bar control, Shortcuts, Siri)
 
-The app is a Dock-less menu bar agent that runs the same tap and adds two things the CLI cannot:
+The app is a Dock-less menu bar utility that runs the same tap and adds:
 
-- A menu bar icon to switch between auto, on, and off.
-- App Intents, so `Set Scroll Flip Mode` and `Cycle Scroll Flip Mode` appear as actions in the Shortcuts app and Spotlight, and as a Siri phrase. This is the reason it must be a real app: the metadata that exposes App Intents is produced by Xcode and only works inside a signed, registered app bundle, not a loose binary.
+- A compact native control panel for Auto, On, and Off.
+- Live feedback for the active mode, lid position, event-tap health, and Accessibility permission.
+- One-click permission recovery with a clear explanation of what the app can access.
+- App Intents, so `Set ScrollFlip Mode` and `Cycle ScrollFlip Mode` appear in Shortcuts and Spotlight, with a Siri phrase. This metadata requires a signed app bundle and is not available to the loose CLI binary.
 
 ![Set Scroll Flip Mode and Cycle Scroll Flip Mode shown as native actions in the macOS Shortcuts app](docs/shortcuts.png)
 
@@ -138,33 +140,16 @@ Sign with your own Development identity. The Accessibility grant is then tied to
 ### Install
 
 ```
-cp -R app/build/Release/ScrollFlip.app /Applications/
+ditto app/build/Release/ScrollFlip.app /Applications/ScrollFlip.app
 ```
 
-Run it at login with a LaunchAgent that points at the app binary:
+ScrollFlip does not install a LaunchAgent or add itself to Login Items. Open it manually from Applications whenever you want to use it.
 
-```
-cat > ~/Library/LaunchAgents/com.yourname.ScrollFlip.plist <<'PLIST'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key><string>com.yourname.ScrollFlip</string>
-    <key>ProgramArguments</key>
-    <array><string>/Applications/ScrollFlip.app/Contents/MacOS/ScrollFlip</string></array>
-    <key>RunAtLoad</key><true/>
-    <key>KeepAlive</key><true/>
-</dict>
-</plist>
-PLIST
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.yourname.ScrollFlip.plist
-```
-
-On first launch the app asks for Accessibility permission. Approve it, or add `/Applications/ScrollFlip.app` under System Settings, Privacy and Security, Accessibility. The menu bar icon turns active once the tap is running.
+On first launch the app asks for Accessibility permission. Approve it, or use **Open Settings** in the popover. ScrollFlip changes mouse-wheel events only; it never reads clicks or keystrokes. The menu bar icon turns active once the tap is running.
 
 ### Use
 
-- Menu bar: click the mouse icon and pick auto, on, or off.
+- Menu bar: click the mouse icon, pick Auto, On, or Off, and see exactly what ScrollFlip is doing.
 - Shortcuts: search Scroll Flip in the Shortcuts app for the Set and Cycle actions.
 - Siri or Spotlight: say or type Cycle Scroll Flip.
 

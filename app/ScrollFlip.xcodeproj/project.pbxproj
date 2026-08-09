@@ -13,6 +13,8 @@
 		FF00000000000000000054 /* ModeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00000000000000000044 /* ModeStore.swift */; };
 		FF00000000000000000055 /* Intents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00000000000000000045 /* Intents.swift */; };
 		FF00000000000000000056 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = FF00000000000000000047 /* AppIcon.icns */; };
+		FF00000000000000000057 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00000000000000000048 /* AppModel.swift */; };
+		FF00000000000000000058 /* ControlPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00000000000000000049 /* ControlPanelView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		FF00000000000000000045 /* Intents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Intents.swift; sourceTree = "<group>"; };
 		FF00000000000000000046 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FF00000000000000000047 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		FF00000000000000000048 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		FF00000000000000000049 /* ControlPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlPanelView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,7 +37,7 @@
 /* Begin PBXGroup section */
 		FF00000000000000000002 = {isa = PBXGroup; children = (FF00000000000000000004 /* ScrollFlip */, FF00000000000000000003 /* Products */); sourceTree = "<group>"; };
 		FF00000000000000000003 /* Products */ = {isa = PBXGroup; children = (FF00000000000000000011 /* ScrollFlip.app */); name = Products; sourceTree = "<group>"; };
-		FF00000000000000000004 /* ScrollFlip */ = {isa = PBXGroup; children = (FF00000000000000000041 /* main.swift */, FF00000000000000000042 /* AppDelegate.swift */, FF00000000000000000043 /* ScrollTap.swift */, FF00000000000000000044 /* ModeStore.swift */, FF00000000000000000045 /* Intents.swift */, FF00000000000000000047 /* AppIcon.icns */, FF00000000000000000046 /* Info.plist */); path = ScrollFlip; sourceTree = "<group>"; };
+		FF00000000000000000004 /* ScrollFlip */ = {isa = PBXGroup; children = (FF00000000000000000041 /* main.swift */, FF00000000000000000042 /* AppDelegate.swift */, FF00000000000000000048 /* AppModel.swift */, FF00000000000000000049 /* ControlPanelView.swift */, FF00000000000000000043 /* ScrollTap.swift */, FF00000000000000000044 /* ModeStore.swift */, FF00000000000000000045 /* Intents.swift */, FF00000000000000000047 /* AppIcon.icns */, FF00000000000000000046 /* Info.plist */); path = ScrollFlip; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -49,14 +53,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		FF00000000000000000020 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (FF00000000000000000051 /* main.swift in Sources */, FF00000000000000000052 /* AppDelegate.swift in Sources */, FF00000000000000000053 /* ScrollTap.swift in Sources */, FF00000000000000000054 /* ModeStore.swift in Sources */, FF00000000000000000055 /* Intents.swift in Sources */); runOnlyForDeploymentPostprocessing = 0; };
+		FF00000000000000000020 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (FF00000000000000000051 /* main.swift in Sources */, FF00000000000000000052 /* AppDelegate.swift in Sources */, FF00000000000000000057 /* AppModel.swift in Sources */, FF00000000000000000058 /* ControlPanelView.swift in Sources */, FF00000000000000000053 /* ScrollTap.swift in Sources */, FF00000000000000000054 /* ModeStore.swift in Sources */, FF00000000000000000055 /* Intents.swift in Sources */); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
 		FF00000000000000000031 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; COPY_PHASE_STRIP = NO; ENABLE_STRICT_OBJC_MSGSEND = YES; GCC_NO_COMMON_BLOCKS = YES; MACOSX_DEPLOYMENT_TARGET = 14.0; ONLY_ACTIVE_ARCH = YES; SDKROOT = macosx; SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; SWIFT_VERSION = 5.0; }; name = Debug; };
 		FF00000000000000000032 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; COPY_PHASE_STRIP = NO; ENABLE_NS_ASSERTIONS = NO; ENABLE_STRICT_OBJC_MSGSEND = YES; GCC_NO_COMMON_BLOCKS = YES; MACOSX_DEPLOYMENT_TARGET = 14.0; SDKROOT = macosx; SWIFT_COMPILATION_MODE = wholemodule; SWIFT_OPTIMIZATION_LEVEL = "-O"; SWIFT_VERSION = 5.0; }; name = Release; };
-		FF00000000000000000034 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_IDENTITY = "-"; CODE_SIGN_STYLE = Manual; COMBINE_HIDPI_IMAGES = YES; CURRENT_PROJECT_VERSION = 1; ENABLE_HARDENED_RUNTIME = NO; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = ScrollFlip/Info.plist; LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks"); MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.keskinonur.ScrollFlip; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; }; name = Debug; };
-		FF00000000000000000035 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_IDENTITY = "-"; CODE_SIGN_STYLE = Manual; COMBINE_HIDPI_IMAGES = YES; CURRENT_PROJECT_VERSION = 1; ENABLE_HARDENED_RUNTIME = NO; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = ScrollFlip/Info.plist; LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks"); MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.keskinonur.ScrollFlip; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; }; name = Release; };
+		FF00000000000000000034 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_IDENTITY = "-"; CODE_SIGN_STYLE = Manual; COMBINE_HIDPI_IMAGES = YES; CURRENT_PROJECT_VERSION = 2; ENABLE_APP_SANDBOX = NO; ENABLE_HARDENED_RUNTIME = NO; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = ScrollFlip/Info.plist; LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks"); MARKETING_VERSION = 1.1; PRODUCT_BUNDLE_IDENTIFIER = com.keskinonur.ScrollFlip; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; }; name = Debug; };
+		FF00000000000000000035 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_IDENTITY = "-"; CODE_SIGN_STYLE = Manual; COMBINE_HIDPI_IMAGES = YES; CURRENT_PROJECT_VERSION = 2; ENABLE_APP_SANDBOX = NO; ENABLE_HARDENED_RUNTIME = YES; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = ScrollFlip/Info.plist; LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks"); MARKETING_VERSION = 1.1; PRODUCT_BUNDLE_IDENTIFIER = com.keskinonur.ScrollFlip; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; }; name = Release; };
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */

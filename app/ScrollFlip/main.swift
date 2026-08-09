@@ -11,8 +11,10 @@ try? FileManager.default.createDirectory(atPath: stateDir, withIntermediateDirec
 let lockFD = open(stateDir + "/app.lock", O_CREAT | O_RDWR, 0o644)
 if lockFD < 0 || flock(lockFD, LOCK_EX | LOCK_NB) != 0 { exit(0) }
 
-let app = NSApplication.shared
-let delegate = AppDelegate()
-app.delegate = delegate
-app.setActivationPolicy(.accessory)   // no Dock icon, menu bar only
-app.run()
+MainActor.assumeIsolated {
+    let app = NSApplication.shared
+    let delegate = AppDelegate()
+    app.delegate = delegate
+    app.setActivationPolicy(.accessory)   // no Dock icon, menu bar only
+    app.run()
+}
